@@ -6,14 +6,14 @@ import pymysql
 import random
 import math
 import functools
-import getch
+from getch import getch
 
 class Learn(object):
     def __init__(self):
         self.exp = math.exp(1)
         os.system("clear")
         print("WELCOME TO JAPANESE WORDS LERANIGN!!!")
-        print("Select one:")
+        print("ENTER NUMBER TO SELECT:")
         print("   0. Update the databases")
         print("   1. JLPT different kinds of words learnig")
         print("   2. Different grades kanji learning")
@@ -102,12 +102,15 @@ class Learn(object):
             page += 1
 
     def updateData(self):
+        confirmAgain = input("ENTER 2147483647 TO CERTAIN")
+        if confirmAgain != "2147483647":
+            return
         #update each JLPT grade
         os.system("clear")
         print("Please waiting...")
         for grade in range(1, 6):
             print("-------------------------------------")
-            print("Update JLPT N%d" % (grade))
+            print("UPDATE JLPT N%d" % (grade))
             self.updateDataInGrade(grade)
             # break
     
@@ -147,29 +150,54 @@ class Learn(object):
         order.sort(key = functools.cmp_to_key(self.myCmp))
 
         #Everything is ready, remember use order
+        cirIndex = 0
+        while True:
+            os.system("clear")
+            now = self.data[order[cirIndex]]
+            print(now[1])
+            getKey = getch()
+            if getKey == "q":
+                return
+            print(now[2])
+            self.myPrint(now[3], now[4])
+            getKey = getch()
+            if getKey == "q":
+                return
+
+            cirIndex += 1
+            if cirIndex == allNum:
+                cirIndex = 0
+    
+    def myPrint(self, meanings, others):
+        print("")
+        print(meanings.replace("#Other forms", "").replace("#", '\n').replace(">", "\n"))
+        if(others != ""):
+            print("\nOTHER FORMS:")
+            print(others)
+        
 
     def wordCategories(self):
         os.system("clear")
-        print("Input JLPT grade(1 - 5):")
-        jpltGrade = int(getch.getch())
+        print("ENTER JLPT GRADE: 1 - 5")
+        jpltGrade = int(getch())
         os.system("clear")
-        print("Select one:")
-        print("   1. Noun")
-        print("   2. Verb")
-        print("   3. Adverb")
-        print("   4. Adjective")
-        print("   5. All")
-        menu2 = getch.getch()
+        print("ENTER NUMBER TO SELECT:")
+        print("   1. NOUN")
+        print("   2. VERB")
+        print("   3. ADVERB")
+        print("   4. ADJECTIVE")
+        print("   5. ALL")
+        menu2 = getch()
         self.myPractice(jpltGrade, menu2)
 
     def main(self):        
-        menu1 = getch.getch()
+        menu1 = getch()
         if menu1 == "0":
             self.updateData()
         elif menu1 == "1":
             self.wordCategories()
         else:
-            print("Loading...")
+            print("LOADING...")
         self.connection.close()
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ class Learn(object):
             charset='utf8'
         )
         self.cursor = self.connection.cursor()
-    
+
     def updateDataHTML(self, html, grade):
         soup = BeautifulSoup(html, features = "html.parser")
         for box in soup.find_all(class_ = "concept_light clearfix"):
@@ -136,12 +136,19 @@ class Learn(object):
         return 1;
 
     def myPractice(self, grade, wType):
-        self.cursor.execute('''
-            SELECT id,kanji,kana,meaning,other,weight from words
-            WHERE grade = %d
-            AND type LIKE '%%%s%%'
-            ORDER BY weight DESC;
-        ''' % (grade, wType))
+        if(wType == "5"):
+            self.cursor.execute('''
+                SELECT id,kanji,kana,meaning,other,weight from words
+                WHERE grade = %d
+                ORDER BY weight DESC;
+            ''' % (grade))
+        else:
+            self.cursor.execute('''
+                SELECT id,kanji,kana,meaning,other,weight from words
+                WHERE grade = %d
+                AND type LIKE '%%%s%%'
+                ORDER BY weight DESC;
+            ''' % (grade, wType))
         self.data = self.cursor.fetchall()
         order = []
         allNum = len(self.data)
@@ -158,15 +165,40 @@ class Learn(object):
             getKey = getch()
             if getKey == "q":
                 return
+            
             print(now[2])
             self.myPrint(now[3], now[4])
+            print("")
+            print("RIGHT: [SPACE]")
+            print("WRONG: [F]")
             getKey = getch()
             if getKey == "q":
                 return
+            elif getKey == " ":
+                self.changeWeight(now[0], -1)
+            elif getKey == "f":
+                self.changeWeight(now[0], 1)
 
             cirIndex += 1
             if cirIndex == allNum:
                 cirIndex = 0
+    
+    def changeWeight(self, order, value):
+        self.cursor.execute('''
+            SELECT weight from words
+            WHERE id = %d
+        ''' % (order))
+        now = self.cursor.fetchall()[0][0]
+        now += value
+        now = max(0, min(100, now))
+        self.cursor.execute('''
+            UPDATE words
+            SET weight = %d
+            WHERE id = %d
+        ''' % (now, order))
+        self.connection.commit()
+        # getch()
+
     
     def myPrint(self, meanings, others):
         print("")
@@ -190,7 +222,7 @@ class Learn(object):
         menu2 = getch()
         self.myPractice(jpltGrade, menu2)
 
-    def main(self):        
+    def main(self):
         menu1 = getch()
         if menu1 == "0":
             self.updateData()

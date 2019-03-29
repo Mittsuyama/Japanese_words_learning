@@ -13,8 +13,8 @@ class GUI:
         #mysql
         self.connection = pymysql.connect(
             host = "localhost",
-            user = "root",
-            password = "ss9905110013",
+            user = "user",
+            password = "password",
             db = "japanese_words",
             charset='utf8'
         )
@@ -127,7 +127,7 @@ class GUI:
         now = self.order[self.index]
 
         fontSize = 30
-        fontSizeSmall = 17
+        fontSizeSmall = 18
 
         self.kanjiVal = StringVar()
         self.kanaVal = StringVar()

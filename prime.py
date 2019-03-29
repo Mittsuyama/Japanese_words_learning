@@ -21,8 +21,8 @@ class Learn(object):
         #mysql
         self.connection = pymysql.connect(
             host = "localhost",
-            user = "root",
-            password = "ss9905110013",
+            user = "user",
+            password = "password",
             db = "japanese_words",
             charset='utf8'
         )
